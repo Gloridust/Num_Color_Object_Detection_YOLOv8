@@ -1,0 +1,7 @@
+train: ./data/images/train
+val: ./data/images/val
+
+names:
+  0: red
+  1: blue
+  2: white 

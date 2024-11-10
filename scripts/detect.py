@@ -4,10 +4,10 @@ from utils import send_detection_results
 
 def detect():
     # 加载训练好的模型
-    model = YOLO('models/best.pt')  # 替换为你的模型权重文件
+    model = YOLO('models/best.pt')  # 请确保模型文件存在于此路径
 
     # 打开摄像头
-    cap = cv2.VideoCapture(0)  # 参数根据摄像头设备ID调整
+    cap = cv2.VideoCapture(0)  # 根据实际摄像头调整设备ID
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -22,7 +22,7 @@ def detect():
             boxes = r.boxes
             for box in boxes:
                 # 获取坐标
-                x1, y1, x2, y2 = box.xyxy[0]
+                x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
 
                 # 计算中心坐标
