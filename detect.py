@@ -3,6 +3,8 @@ from ultralytics import YOLO
 from utils import send_detection_results
 import config
 import torch
+import logging
+import time
 
 def get_device():
     if torch.cuda.is_available():
@@ -12,22 +14,37 @@ def get_device():
     else:
         return 'cpu'
 
+def setup_logging():
+    logging.basicConfig(
+        filename='detection.log',
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+
 def detect():
+    setup_logging()
     try:
         # 加载训练好的模型
         model = YOLO(config.MODEL_PATH)  # 使用配置中的模型路径
 
         # 设置设备
         device = get_device()
-        print(f"使用设备: {device}")
+        logging.info(f"使用设备: {device}")
 
         # 打开摄像头
         cap = cv2.VideoCapture(0)  # 根据实际摄像头调整设备ID
+
+        prev_time = 0
 
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
+
+            # 计算帧率
+            current_time = time.time()
+            fps = 1 / (current_time - prev_time)
+            prev_time = current_time
 
             # 推理
             results = model(frame, device=device)
@@ -56,10 +73,15 @@ def detect():
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
                     # 输出中心坐标
+                    logging.info(f"检测到{label}，中心坐标：({cx}, {cy})")
                     print(f"检测到{label}，中心坐标：({cx}, {cy})")
 
                     # 发送检测结果
                     send_detection_results(label, cx, cy)
+
+            # 显示帧率
+            cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
             # 显示结果
             cv2.imshow('YOLOv8 Detection', frame)
@@ -69,6 +91,7 @@ def detect():
         cap.release()
         cv2.destroyAllWindows()
     except Exception as e:
+        logging.error(f"检测过程中出现错误: {e}")
         print(f"检测过程中出现错误: {e}")
     finally:
         if cap.isOpened():
