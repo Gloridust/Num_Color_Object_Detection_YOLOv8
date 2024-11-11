@@ -2,11 +2,24 @@ import cv2
 from ultralytics import YOLO
 from utils import send_detection_results
 import config
+import torch
+
+def get_device():
+    if torch.cuda.is_available():
+        return 'cuda'
+    elif torch.backends.mps.is_available():
+        return 'mps'
+    else:
+        return 'cpu'
 
 def detect():
     try:
         # 加载训练好的模型
         model = YOLO(config.MODEL_PATH)  # 使用配置中的模型路径
+
+        # 设置设备
+        device = get_device()
+        print(f"使用设备: {device}")
 
         # 打开摄像头
         cap = cv2.VideoCapture(0)  # 根据实际摄像头调整设备ID
@@ -17,7 +30,7 @@ def detect():
                 break
 
             # 推理
-            results = model(frame)
+            results = model(frame, device=device)
 
             # 解析结果
             for r in results:
