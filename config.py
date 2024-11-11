@@ -23,4 +23,9 @@ TRAIN_PARAMS = {
     'batch': 48,
     'device': 0,  # 使用GPU，如无GPU可设置为'cpu'
     'verbose': True
+}
+
+# 早停机制参数
+EARLY_STOPPING = {
+    'patience': 5  # 可以根据需要调整
 } 
