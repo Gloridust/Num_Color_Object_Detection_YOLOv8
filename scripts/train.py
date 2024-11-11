@@ -10,11 +10,12 @@ def train_model():
 
     # 开始训练
     model.train(
-        data='/home/gloridust/Documents/Github/Num_Color_Object_Detection_YOLOv8/data.yaml',  # 使用绝对路径
+        data='data.yaml',
         epochs=50,
         imgsz=640,
         batch=16,
-        device=0  # 使用GPU，如无GPU可设置为'cpu'
+        device=0,  # 使用GPU，如无GPU可设置为'cpu'
+        verbose=True  # 启用详细日志
     )
 
 if __name__ == "__main__":
