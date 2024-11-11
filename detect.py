@@ -83,6 +83,9 @@ def detect():
             cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
+            # 记录帧率
+            logging.info(f"当前帧率: {fps:.2f}")
+
             # 显示结果
             cv2.imshow('YOLOv8 Detection', frame)
             if cv2.waitKey(1) == ord('q'):
